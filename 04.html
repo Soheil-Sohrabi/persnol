@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personal Portfolio | Modern Glass UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --secondary: #8b5cf6;
+            --accent: #ec4899;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .dark {
+            --primary: #60a5fa;
+            --secondary: #a78bfa;
+            --accent: #f472b6;
+            --dark: #f8fafc;
+            --light: #0f172a;
+            --glass-bg: rgba(15, 23, 42, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.36);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            color: var(--dark);
+            transition: all 0.3s ease;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .dark body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+        }
+
+        .glass-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            box-shadow: var(--glass-shadow);
+            border-radius: 12px;
+        }
+
+        .progress-container {
+            width: 100%;
+            height: 4px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+        }
+
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.1s ease;
+        }
+
+        .scroll-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            z-index: 999;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .scroll-to-top.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .scroll-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+
+        .cursor-light {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            transform: translate(-50%, -50%);
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .cursor-light.active {
+            opacity: 1;
+        }
+
+        .hamburger-menu {
+            display: none;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger-menu .bar {
+            width: 25px;
+            height: 3px;
+            background-color: var(--dark);
+            margin: 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .dark .hamburger-menu .bar {
+            background-color: var(--light);
+        }
+
+        .hamburger-menu.active .bar:nth-child(1) {
+            transform: translateY(8px) rotate(45deg);
+        }
+
+        .hamburger-menu.active .bar:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active .bar:nth-child(3) {
+            transform: translateY(-8px) rotate(-45deg);
+        }
+
+        .mobile-menu {
+            position: fixed;
+            top: 0;
+            right: -100%;
+            width: 70%;
+            height: 100vh;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 1000;
+            transition: all 0.5s ease;
+            padding: 80px 20px;
+            box-shadow: -5px 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .mobile-menu.active {
+            right: 0;
+        }
+
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1002;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 400px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 12px;
+            padding: 30px;
+            transform: translateY(-50px);
+            transition: all 0.3s ease;
+            box-shadow: var(--glass-shadow);
+        }
+
+        .modal.active .modal-content {
+            transform: translateY(0);
+        }
+
+        .language-switcher {
+            position: relative;
+        }
+
+        .language-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 8px;
+            padding: 10px;
+            min-width: 120px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .language-switcher:hover .language-dropdown {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .rtl {
+            direction: rtl;
+            text-align: right;
+        }
+
+        .skill-bar {
+            height: 8px;
+            background-color: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .skill-progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            border-radius: 4px;
+            transition: width 1.5s ease;
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .course-card {
+            transition: all 0.3s ease;
+        }
+
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .social-icon:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hamburger-menu {
+                display: block;
+            }
+
+            .hero-content {
+                flex-direction: column;
+            }
+
+            .hero-text {
+                width: 100%;
+                text-align: center;
+                margin-bottom: 30px;
+            }
+
+            .hero-image {
+                width: 100%;
+            }
+
+            .skills-container {
+                grid-template-columns: 1fr;
+            }
+
+            .blog-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body class="dark">
+    <!-- Cursor Light Effect -->
+    <div class="cursor-light"></div>
+
+    <!-- Scroll Progress Bar -->
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+
+    <!-- Scroll to Top Button -->
+    <div class="scroll-to-top" id="scrollToTop">
+        <i class="fas fa-arrow-up"></i>
+    </div>
+
+    <!-- Header -->
+    <header class="glass-card fixed w-full z-50">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold">
+                        JD
+                    </div>
+                    <span class="ml-3 text-xl font-bold">John Doe</span>
+                </div>
+
+                <div class="nav-links flex items-center space-x-8">
+                    <a href="#home" class="text-sm font-medium hover:text-primary transition">Home</a>
+                    <a href="#about" class="text-sm font-medium hover:text-primary transition">About</a>
+                    <a href="#skills" class="text-sm font-medium hover:text-primary transition">Skills</a>
+                    <a href="#blog" class="text-sm font-medium hover:text-primary transition">Blog</a>
+                    <a href="#courses" class="text-sm font-medium hover:text-primary transition">Courses</a>
+                    <a href="#contact" class="text-sm font-medium hover:text-primary transition">Contact</a>
+                </div>
+
+                <div class="flex items-center space-x-4">
+                    <div class="language-switcher relative">
+                        <button class="flex items-center space-x-1 text-sm">
+                            <i class="fas fa-globe"></i>
+                            <span>EN</span>
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </button>
+                        <div class="language-dropdown">
+                            <button class="w-full text-left py-2 px-3 hover:bg-primary hover:bg-opacity-10 rounded transition" data-lang="en">English</button>
+                            <button class="w-full text-left py-2 px-3 hover:bg-primary hover:bg-opacity-10 rounded transition" data-lang="fa">Persian</button>
+                            <button class="w-full text-left py-2 px-3 hover:bg-primary hover:bg-opacity-10 rounded transition" data-lang="ar">Arabic</button>
+                        </div>
+                    </div>
+
+                    <button id="themeToggle" class="w-10 h-10 rounded-full flex items-center justify-center hover:bg-primary hover:bg-opacity-10 transition">
+                        <i class="fas fa-moon"></i>
+                    </button>
+
+                    <button id="loginBtn" class="px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition">
+                        Login
+                    </button>
+
+                    <div id="userProfile" class="hidden items-center">
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        <span class="ml-2 text-sm">John</span>
+                    </div>
+                </div>
+
+                <div class="hamburger-menu">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu">
+        <div class="flex flex-col space-y-6">
+            <a href="#home" class="text-lg font-medium hover:text-primary transition">Home</a>
+            <a href="#about" class="text-lg font-medium hover:text-primary transition">About</a>
+            <a href="#skills" class="text-lg font-medium hover:text-primary transition">Skills</a>
+            <a href="#blog" class="text-lg font-medium hover:text-primary transition">Blog</a>
+            <a href="#courses" class="text-lg font-medium hover:text-primary transition">Courses</a>
+            <a href="#contact" class="text-lg font-medium hover:text-primary transition">Contact</a>
+            
+            <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                <button id="mobileLoginBtn" class="w-full px-4 py-2 rounded-full text-sm font-medium bg-gradient-to-r from-primary to-accent text-white hover:opacity-90 transition">
+                    Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Login Modal -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Welcome Back</h3>
+                <button class="modal-close p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="loginEmail" class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="loginEmail" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label for="loginPassword" class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="loginPassword" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center">
+                        <input type="checkbox" id="rememberMe" class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
+                        <label for="rememberMe" class="ml-2 block text-sm">Remember me</label>
+                    </div>
+                    
+                    <a href="#" class="text-sm text-primary hover:underline">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="w-full py-2 px-4 rounded-full bg-gradient-to-r from-primary to-accent text-white font-medium hover:opacity-90 transition">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center text-sm">
+                <p>Don't have an account? <button id="switchToSignup" class="text-primary hover:underline">Sign up</button></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Signup Modal -->
+    <div class="modal" id="signupModal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold">Create Account</h3>
+                <button class="modal-close p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            
+            <form id="signupForm" class="space-y-4">
+                <div>
+                    <label for="signupName" class="block text-sm font-medium mb-1">Full Name</label>
+                    <input type="text" id="signupName" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label for="signupEmail" class="block text-sm font-medium mb-1">Email</label>
+                    <input type="email" id="signupEmail" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label for="signupPassword" class="block text-sm font-medium mb-1">Password</label>
+                    <input type="password" id="signupPassword" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div>
+                    <label for="signupConfirmPassword" class="block text-sm font-medium mb-1">Confirm Password</label>
+                    <input type="password" id="signupConfirmPassword" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="agreeTerms" class="h-4 w-4 rounded border-gray-300 dark:border-gray-600 text-primary focus:ring-primary">
+                    <label for="agreeTerms" class="ml-2 block text-sm">I agree to the <a href="#" class="text-primary hover:underline">Terms & Conditions</a></label>
+                </div>
+                
+                <button type="submit" class="w-full py-2 px-4 rounded-full bg-gradient-to-r from-primary to-accent text-white font-medium hover:opacity-90 transition">
+                    Create Account
+                </button>
+            </form>
+            
+            <div class="mt-4 text-center text-sm">
+                <p>Already have an account? <button id="switchToLogin" class="text-primary hover:underline">Sign in</button></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center pt-20">
+        <div class="container mx-auto px-6 py-20">
+            <div class="hero-content flex items-center justify-between">
+                <div class="hero-text w-1/2">
+                    <h1 class="text-5xl font-bold mb-6 leading-tight">
+                        Hi, I'm <span class="text-primary">John Doe</span>
+                        <br>Full Stack Developer
+                    </h1>
+                    <p class="text-lg mb-8 opacity-80">
+                        I build exceptional digital experiences that are fast, accessible, visually appealing, and responsive.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#contact" class="px-6 py-3 rounded-full bg-gradient-to-r from-primary to-accent text-white font-medium hover:opacity-90 transition">
+                            Hire Me
+                        </a>
+                        <a href="#about" class="px-6 py-3 rounded-full border border-primary text-primary font-medium hover:bg-primary hover:bg-opacity-10 transition">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-image w-1/2 flex justify-center">
+                    <div class="relative">
+                        <div class="w-80 h-80 rounded-full bg-gradient-to-r from-primary to-accent opacity-20 blur-3xl absolute -z-10 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"></div>
+                        <img src="https://randomuser.me/api/portraits/men/32.jpg" alt="Profile" class="w-80 h-80 rounded-full object-cover border-4 border-white dark:border-gray-800 shadow-xl">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-12 text-center">About <span class="text-primary">Me</span></h2>
+            
+            <div class="glass-card p-8 rounded-xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">Who am I?</h3>
+                        <p class="mb-6 opacity-90">
+                            I'm a passionate Full Stack Developer with over 5 years of experience creating web applications. 
+                            My journey in tech started when I was 15 years old, and since then I've been obsessed with creating 
+                            beautiful, functional digital experiences.
+                        </p>
+                        <p class="mb-6 opacity-90">
+                            When I'm not coding, you can find me hiking in the mountains, reading sci-fi novels, or experimenting 
+                            with new cooking recipes. I believe in continuous learning and pushing the boundaries of what's possible.
+                        </p>
+                        <div class="flex space-x-4">
+                            <a href="#" class="social-icon bg-blue-500 text-white">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="social-icon bg-gray-800 text-white">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="#" class="social-icon bg-pink-600 text-white">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#" class="social-icon bg-blue-400 text-white">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-4">My Skills</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium">JavaScript</span>
+                                    <span class="text-sm">95%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: 95%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium">React</span>
+                                    <span class="text-sm">90%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: 90%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium">Node.js</span>
+                                    <span class="text-sm">85%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: 85%"></div>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <div class="flex justify-between mb-1">
+                                    <span class="text-sm font-medium">UI/UX Design</span>
+                                    <span class="text-sm">80%</span>
+                                </div>
+                                <div class="skill-bar">
+                                    <div class="skill-progress" style="width: 80%"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <a href="#skills" class="inline-block mt-6 px-4 py-2 rounded-full border border-primary text-primary font-medium hover:bg-primary hover:bg-opacity-10 transition">
+                            View All Skills
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section id="skills" class="py-20 bg-gradient-to-b from-transparent to-gray-100 dark:to-gray-900">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-12 text-center">My <span class="text-primary">Skills</span> & Experience</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Frontend Skills -->
+                <div class="glass-card p-6 rounded-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center text-primary mr-3">
+                            <i class="fas fa-laptop-code"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Frontend</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>HTML5, CSS3, JavaScript (ES6+)</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>React, Next.js, Vue.js</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Tailwind CSS, SASS, Styled Components</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Responsive & Mobile-First Design</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Web Accessibility (a11y)</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Backend Skills -->
+                <div class="glass-card p-6 rounded-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center text-primary mr-3">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Backend</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Node.js, Express, NestJS</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Python, Django, Flask</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>RESTful APIs, GraphQL</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Authentication & Authorization</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Microservices Architecture</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Other Skills -->
+                <div class="glass-card p-6 rounded-xl">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center text-primary mr-3">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h3 class="text-xl font-bold">Other</h3>
+                    </div>
+                    <ul class="space-y-3">
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Docker, Kubernetes</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>AWS, Google Cloud</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>CI/CD Pipelines</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Testing (Jest, Cypress)</span>
+                        </li>
+                        <li class="flex items-center">
+                            <i class="fas fa-check-circle text-primary mr-2"></i>
+                            <span>Agile & Scrum Methodologies</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Experience Timeline -->
+            <div class="glass-card p-8 rounded-xl mt-12">
+                <h3 class="text-2xl font-bold mb-8">Work <span class="text-primary">Experience</span></h3>
+                
+                <div class="relative">
+                    <!-- Timeline line -->
+                    <div class="absolute left-4 top-0 h-full w-0.5 bg-primary bg-opacity-20"></div>
+                    
+                    <!-- Timeline items -->
+                    <div class="space-y-8">
+                        <!-- Item 1 -->
+                        <div class="relative pl-12">
+                            <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="glass-card p-6 rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="text-lg font-bold">Senior Full Stack Developer</h4>
+                                    <span class="text-sm bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-full">2021 - Present</span>
+                                </div>
+                                <h5 class="text-sm font-medium mb-3">Tech Solutions Inc.</h5>
+                                <p class="opacity-90">
+                                    Lead a team of developers to build scalable web applications for enterprise clients. 
+                                    Implemented microservices architecture that improved system performance by 40%.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 2 -->
+                        <div class="relative pl-12">
+                            <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="glass-card p-6 rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="text-lg font-bold">Full Stack Developer</h4>
+                                    <span class="text-sm bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-full">2018 - 2021</span>
+                                </div>
+                                <h5 class="text-sm font-medium mb-3">Digital Creations</h5>
+                                <p class="opacity-90">
+                                    Developed and maintained multiple client projects using React and Node.js. 
+                                    Introduced automated testing which reduced bugs in production by 60%.
+                                </p>
+                            </div>
+                        </div>
+                        
+                        <!-- Item 3 -->
+                        <div class="relative pl-12">
+                            <div class="absolute left-0 top-0 w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white">
+                                <i class="fas fa-briefcase"></i>
+                            </div>
+                            <div class="glass-card p-6 rounded-lg">
+                                <div class="flex justify-between items-start mb-2">
+                                    <h4 class="text-lg font-bold">Frontend Developer</h4>
+                                    <span class="text-sm bg-primary bg-opacity-10 text-primary px-3 py-1 rounded-full">2016 - 2018</span>
+                                </div>
+                                <h5 class="text-sm font-medium mb-3">Web Design Studio</h5>
+                                <p class="opacity-90">
+                                    Created responsive websites and web applications for small businesses. 
+                                    Implemented modern design principles that increased client satisfaction.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section id="blog" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-4 text-center">Latest <span class="text-primary">Articles</span></h2>
+            <p class="text-center mb-12 max-w-2xl mx-auto opacity-90">
+                I write about web development, design, and my experiences in the tech industry.
+            </p>
+            
+            <div class="blog-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Blog Post 1 -->
+                <div class="glass-card rounded-xl overflow-hidden hover:shadow-xl transition">
+                    <div class="h-48 bg-gradient-to-r from-primary to-accent flex items-center justify-center">
+                        <i class="fas fa-code text-white text-5xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm mb-3">
+                            <span class="text-primary">Development</span>
+                            <span class="mx-2">•</span>
+                            <span>May 15, 2023</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">The Future of React in 2023</h3>
+                        <p class="mb-4 opacity-90">
+                            Exploring the latest features and upcoming changes in React 18 and beyond...
+                        </p>
+                        <a href="#" class="text-primary font-medium hover:underline inline-flex items-center">
+                            Read More <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Blog Post 2 -->
+                <div class="glass-card rounded-xl overflow-hidden hover:shadow-xl transition">
+                    <div class="h-48 bg-gradient-to-r from-secondary to-accent flex items-center justify-center">
+                        <i class="fas fa-paint-brush text-white text-5xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm mb-3">
+                            <span class="text-primary">Design</span>
+                            <span class="mx-2">•</span>
+                            <span>April 28, 2023</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Glassmorphism UI Design Trends</h3>
+                        <p class="mb-4 opacity-90">
+                            How to implement the popular glassmorphism effect in your web projects...
+                        </p>
+                        <a href="#" class="text-primary font-medium hover:underline inline-flex items-center">
+                            Read More <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Blog Post 3 -->
+                <div class="glass-card rounded-xl overflow-hidden hover:shadow-xl transition">
+                    <div class="h-48 bg-gradient-to-r from-accent to-pink-500 flex items-center justify-center">
+                        <i class="fas fa-rocket text-white text-5xl"></i>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm mb-3">
+                            <span class="text-primary">Career</span>
+                            <span class="mx-2">•</span>
+                            <span>March 10, 2023</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Breaking Into Tech: A Beginner's Guide</h3>
+                        <p class="mb-4 opacity-90">
+                            Practical advice for those looking to start a career in web development...
+                        </p>
+                        <a href="#" class="text-primary font-medium hover:underline inline-flex items-center">
+                            Read More <i class="fas fa-arrow-right ml-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#" class="px-6 py-3 rounded-full border border-primary text-primary font-medium hover:bg-primary hover:bg-opacity-10 transition inline-flex items-center">
+                    View All Articles <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section id="courses" class="py-20 bg-gradient-to-b from-transparent to-gray-100 dark:to-gray-900">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-4 text-center">My <span class="text-primary">Courses</span></h2>
+            <p class="text-center mb-12 max-w-2xl mx-auto opacity-90">
+                Learn modern web development through my comprehensive video courses.
+            </p>
+            
+            <div class="courses-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Course 1 -->
+                <div class="glass-card rounded-xl overflow-hidden course-card">
+                    <div class="h-48 bg-gradient-to-r from-primary to-blue-600 flex items-center justify-center relative">
+                        <i class="fas fa-react text-white text-6xl"></i>
+                        <div class="absolute top-4 right-4 bg-white dark:bg-gray-900 text-primary font-bold px-3 py-1 rounded-full text-sm">
+                            $49
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm mb-3">
+                            <span>React</span>
+                            <span class="mx-2">•</span>
+                            <span>22 hours</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Mastering React in 2023</h3>
+                        <p class="mb-4 opacity-90">
+                            Comprehensive guide to building modern web applications with React, hooks, and context API.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="font-medium">4.9</span>
+                                <span class="text-sm opacity-70 ml-1">(128)</span>
+                            </div>
+                            <button class="px-4 py-2 rounded-full bg-gradient-to-r from-primary to-accent text-white text-sm font-medium hover:opacity-90 transition">
+                                Enroll Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 2 -->
+                <div class="glass-card rounded-xl overflow-hidden course-card">
+                    <div class="h-48 bg-gradient-to-r from-purple-600 to-secondary flex items-center justify-center relative">
+                        <i class="fab fa-node-js text-white text-6xl"></i>
+                        <div class="absolute top-4 right-4 bg-white dark:bg-gray-900 text-primary font-bold px-3 py-1 rounded-full text-sm">
+                            $39
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm mb-3">
+                            <span>Node.js</span>
+                            <span class="mx-2">•</span>
+                            <span>18 hours</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Node.js Backend Masterclass</h3>
+                        <p class="mb-4 opacity-90">
+                            Build scalable backend services with Node.js, Express, MongoDB, and authentication.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="font-medium">4.8</span>
+                                <span class="text-sm opacity-70 ml-1">(95)</span>
+                            </div>
+                            <button class="px-4 py-2 rounded-full bg-gradient-to-r from-primary to-accent text-white text-sm font-medium hover:opacity-90 transition">
+                                Enroll Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Course 3 -->
+                <div class="glass-card rounded-xl overflow-hidden course-card">
+                    <div class="h-48 bg-gradient-to-r from-pink-600 to-accent flex items-center justify-center relative">
+                        <i class="fas fa-mobile-alt text-white text-6xl"></i>
+                        <div class="absolute top-4 right-4 bg-white dark:bg-gray-900 text-primary font-bold px-3 py-1 rounded-full text-sm">
+                            $29
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <div class="flex items-center text-sm mb-3">
+                            <span>Responsive</span>
+                            <span class="mx-2">•</span>
+                            <span>15 hours</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">Advanced CSS & Responsive Design</h3>
+                        <p class="mb-4 opacity-90">
+                            Master modern CSS techniques including Flexbox, Grid, animations and responsive layouts.
+                        </p>
+                        <div class="flex justify-between items-center">
+                            <div class="flex items-center">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span class="font-medium">4.7</span>
+                                <span class="text-sm opacity-70 ml-1">(76)</span>
+                            </div>
+                            <button class="px-4 py-2 rounded-full bg-gradient-to-r from-primary to-accent text-white text-sm font-medium hover:opacity-90 transition">
+                                Enroll Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="text-center mt-12">
+                <a href="#" class="px-6 py-3 rounded-full border border-primary text-primary font-medium hover:bg-primary hover:bg-opacity-10 transition inline-flex items-center">
+                    View All Courses <i class="fas fa-arrow-right ml-2"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-20">
+        <div class="container mx-auto px-6">
+            <h2 class="text-3xl font-bold mb-4 text-center">Get In <span class="text-primary">Touch</span></h2>
+            <p class="text-center mb-12 max-w-2xl mx-auto opacity-90">
+                Have a project in mind or want to discuss potential opportunities? Feel free to reach out!
+            </p>
+            
+            <div class="glass-card p-8 rounded-xl">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-xl font-bold mb-6">Contact Information</h3>
+                        
+                        <div class="space-y-6">
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center text-primary mr-4">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-1">Email</h4>
+                                    <a href="mailto:hello@johndoe.dev" class="opacity-90 hover:text-primary transition">hello@johndoe.dev</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center text-primary mr-4">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-1">Phone</h4>
+                                    <a href="tel:+1234567890" class="opacity-90 hover:text-primary transition">+1 (234) 567-890</a>
+                                </div>
+                            </div>
+                            
+                            <div class="flex items-start">
+                                <div class="w-10 h-10 rounded-full bg-primary bg-opacity-10 flex items-center justify-center text-primary mr-4">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-medium mb-1">Location</h4>
+                                    <p class="opacity-90">San Francisco, CA</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-8">
+                            <h4 class="font-medium mb-4">Follow Me</h4>
+                            <div class="flex space-x-4">
+                                <a href="#" class="social-icon bg-blue-500 text-white">
+                                    <i class="fab fa-linkedin-in"></i>
+                                </a>
+                                <a href="#" class="social-icon bg-gray-800 text-white">
+                                    <i class="fab fa-github"></i>
+                                </a>
+                                <a href="#" class="social-icon bg-pink-600 text-white">
+                                    <i class="fab fa-instagram"></i>
+                                </a>
+                                <a href="#" class="social-icon bg-blue-400 text-white">
+                                    <i class="fab fa-twitter"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h3 class="text-xl font-bold mb-6">Send Me a Message</h3>
+                        
+                        <form class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium mb-1">Name</label>
+                                    <input type="text" id="name" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                                <div>
+                                    <label for="email" class="block text-sm font-medium mb-1">Email</label>
+                                    <input type="email" id="email" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label for="subject" class="block text-sm font-medium mb-1">Subject</label>
+                                <input type="text" id="subject" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary">
+                            </div>
+                            
+                            <div>
+                                <label for="message" class="block text-sm font-medium mb-1">Message</label>
+                                <textarea id="message" rows="4" class="w-full px-4 py-2 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                            </div>
+                            
+                            <button type="submit" class="w-full py-2 px-4 rounded-full bg-gradient-to-r from-primary to-accent text-white font-medium hover:opacity-90 transition">
+                                Send Message
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-12 bg-gradient-to-b from-gray-100 dark:from-gray-900 to-transparent">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="flex items-center mb-6 md:mb-0">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-accent flex items-center justify-center text-white font-bold">
+                        JD
+                    </div>
+                    <span class="ml-3 text-xl font-bold">John Doe</span>
+                </div>
+                
+                <div class="flex space-x-6 mb-6 md:mb-0">
+                    <a href="#home" class="hover:text-primary transition">Home</a>
+                    <a href="#about" class="hover:text-primary transition">About</a>
+                    <a href="#skills" class="hover:text-primary transition">Skills</a>
+                    <a href="#blog" class="hover:text-primary transition">Blog</a>
+                    <a href="#courses" class="hover:text-primary transition">Courses</a>
+                    <a href="#contact" class="hover:text-primary transition">Contact</a>
+                </div>
+                
+                <div class="flex space-x-4">
+                    <a href="#" class="social-icon bg-blue-500 text-white">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                    <a href="#" class="social-icon bg-gray-800 text-white">
+                        <i class="fab fa-github"></i>
+                    </a>
+                    <a href="#" class="social-icon bg-pink-600 text-white">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="social-icon bg-blue-400 text-white">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-200 dark:border-gray-700 mt-8 pt-8 text-center text-sm opacity-80">
+                <p>&copy; 2023 John Doe. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Theme Toggle
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference or use dark mode as default
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        html.classList.add(savedTheme);
+        updateThemeIcon(savedTheme);
+        
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const currentTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('theme', currentTheme);
+            updateThemeIcon(currentTheme);
+        });
+        
+        function updateThemeIcon(theme) {
+            const icon = themeToggle.querySelector('i');
+            if (theme === 'dark') {
+                icon.classList.remove('fa-sun');
+                icon.classList.add('fa-moon');
+            } else {
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+        }
+        
+        // Scroll Progress Bar
+        const progressBar = document.getElementById('progressBar');
+        
+        window.addEventListener('scroll', () => {
+            const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+            const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrollProgress = (scrollTop / scrollHeight) * 100;
+            progressBar.style.width = scrollProgress + '%';
+        });
+        
+        // Scroll to Top Button
+        const scrollToTopBtn = document.getElementById('scrollToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                scrollToTopBtn.classList.add('active');
+            } else {
+                scrollToTopBtn.classList.remove('active');
+            }
+        });
+        
+        scrollToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Cursor Light Effect
+        const cursorLight = document.querySelector('.cursor-light');
+        
+        document.addEventListener('mousemove', (e) => {
+            cursorLight.style.left = e.clientX + 'px';
+            cursorLight.style.top = e.clientY + 'px';
+            
+            // Activate light effect when mouse moves
+            cursorLight.classList.add('active');
+            
+            // Reset timer for hiding light
+            clearTimeout(window.cursorLightTimeout);
+            window.cursorLightTimeout = setTimeout(() => {
+                cursorLight.classList.remove('active');
+            }, 1000);
+        });
+        
+        // Mobile Menu Toggle
+        const hamburgerMenu = document.querySelector('.hamburger-menu');
+        const mobileMenu = document.querySelector('.mobile-menu');
+        
+        hamburgerMenu.addEventListener('click', () => {
+            hamburgerMenu.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+            
+            // Toggle body scroll when menu is open
+            if (mobileMenu.classList.contains('active')) {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = '';
+            }
+        });
+        
+        // Close mobile menu when clicking on a link
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                hamburgerMenu.classList.remove('active');
+                mobileMenu.classList.remove('active');
+                document.body.style.overflow = '';
+            });
+        });
+        
+        // Modal Handling
+        const loginBtn = document.getElementById('loginBtn');
+        const mobileLoginBtn = document.getElementById('mobileLoginBtn');
+        const loginModal = document.getElementById('loginModal');
+        const signupModal = document.getElementById('signupModal');
+        const switchToSignup = document.getElementById('switchToSignup');
+        const switchToLogin = document.getElementById('switchToLogin');
+        const modalCloseButtons = document.querySelectorAll('.modal-close');
+        const userProfile = document.getElementById('userProfile');
+        
+        // Show login modal
+        function showLoginModal() {
+            loginModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Show signup modal
+        function showSignupModal() {
+            signupModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        // Close all modals
+        function closeModals() {
+            loginModal.classList.remove('active');
+            signupModal.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        loginBtn.addEventListener('click', showLoginModal);
+        mobileLoginBtn.addEventListener('click', showLoginModal);
+        
+        switchToSignup.addEventListener('click', () => {
+            loginModal.classList.remove('active');
+            setTimeout(showSignupModal, 300);
+        });
+        
+        switchToLogin.addEventListener('click', () => {
+            signupModal.classList.remove('active');
+            setTimeout(showLoginModal, 300);
+        });
+        
+        modalCloseButtons.forEach(button => {
+            button.addEventListener('click', closeModals);
+        });
+        
+        // Close modal when clicking outside
+        window.addEventListener('click', (e) => {
+            if (e.target === loginModal || e.target === signupModal) {
+                closeModals();
+            }
+        });
+        
+        // Form Submission (demo purposes)
+        const loginForm = document.getElementById('loginForm');
+        const signupForm = document.getElementById('signupForm');
+        
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // In a real app, you would handle authentication here
+            loginBtn.style.display = 'none';
+            userProfile.classList.remove('hidden');
+            closeModals();
+        });
+        
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // In a real app, you would handle registration here
+            alert('Account created successfully! Please sign in.');
+            signupModal.classList.remove('active');
+            setTimeout(showLoginModal, 300);
+        });
+        
+        // Language Switcher
+        const langButtons = document.querySelectorAll('.language-dropdown button');
+        
+        langButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const lang = e.target.getAttribute('data-lang');
+                const langText = e.target.textContent;
+                const langSwitcher = document.querySelector('.language-switcher button');
+                
+                // Update the language switcher text
+                langSwitcher.innerHTML = `<i class="fas fa-globe"></i> <span>${langText.substring(0, 2)}</span> <i class="fas fa-chevron-down text-xs"></i>`;
+                
+                // In a real app, you would change the language here
+                if (lang === 'fa' || lang === 'ar') {
+                    document.documentElement.classList.add('rtl');
+                } else {
+                    document.documentElement.classList.remove('rtl');
+                }
+                
+                console.log(`Language changed to ${lang}`);
+            });
+        });
+        
+        // Animate skill bars on scroll
+        const skillBars = document.querySelectorAll('.skill-progress');
+        
+        function animateSkillBars() {
+            skillBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 100);
+            });
+        }
+        
+        // Intersection Observer for animations
+        const observerOptions = {
+            threshold: 0.1
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.id === 'skills') {
+                        animateSkillBars();
+                    }
+                    entry.target.classList.add('animated');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        
+        // Observe sections
+        const sections = document.querySelectorAll('section');
+        sections.forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>
